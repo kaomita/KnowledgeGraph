@@ -2,11 +2,13 @@
   <div class="body">
     <div class="fixed">
       <div class="form-demo">
+
         <input
           type="checkbox"
           style="display: none"
           id="change"
           @click="_switch"
+          v-model="checked"
         />
         <label for="change">&lt;&lt;</label>
 
@@ -25,9 +27,12 @@
                 v-model="password"
                 placeholder="请输入密码"
                 class="input"
+                @keyup.enter="login"
               />
               <div class="btn input" @click="login">登录</div>
+              <div class="jump" @click="goRegister">还没有账号?去注册</div>
             </form>
+
             <form action="" class="sign">
               <div class="empty"></div>
               <h1>加入我们</h1>
@@ -54,6 +59,7 @@
                 v-model="code"
                 placeholder="请输入验证码"
                 class="input verify"
+                @keyup.enter="register"
               />
               <div class="btn input" @click="register">注册</div>
               <div
@@ -82,16 +88,25 @@ export default {
       code: "",
       timeCounter: null, //计时器
       showTime: null, //剩余时间
+      checked: false,
     };
   },
   methods: {
     async login() {
+      if (this.email == "" || this.password == "") {
+        this.$message.error("请输入邮箱和密码");
+        return;
+      }
       const res = await login({ email: this.email, password: this.password });
       this.$store.commit("updateUser", res.data.data);
       this.$message.success("登录成功");
       this.$router.push("/main/upload");
     },
     async register() {
+      if (this.email == "" || this.password == "" || this.username == "" || this.code == "") {
+        this.$message.error("请输入完整信息");
+        return;
+      }
       const res = await register({
         email: this.email,
         password: this.password,
@@ -106,6 +121,10 @@ export default {
       this.email = "";
       this.password = "";
       this.username = "";
+    },
+    goRegister() {
+      this.checked = !this.checked;
+      this._switch();
     },
     sendCode() {
       if (this.showTime != null) {
@@ -190,7 +209,7 @@ export default {
 #change:checked+label,
 /* +用来选择同级后面最近的元素  */
 #change:not(:checked)+label {
-  color: white;
+  color: rgb(249, 234, 35);
   width: 10px;
   padding: 8px 0;
   font-size: 40px;
@@ -341,6 +360,22 @@ h1 {
   margin-left: 60px;
   cursor: pointer;
   text-align: center;
+}
+.jump {
+  width: auto;
+  display: inline-block;  /*内联块级元素*/
+  margin-left: auto;
+  margin-right: auto;    /*左右居中*/
+  color: #1842ff;
+  cursor: pointer;
+  /* border-bottom:1px solid silver; */
+  text-decoration: underline;
+  text-decoration-color: #1842ff;
+  text-decoration-thickness: 1px;
+  transform-style: preserve-3d;
+  transform: translate3d(0, 0, 1px);
+  padding-left: 0%;
+  padding-right: 0%;
 }
 .first {
   margin-top: 20px !important;
