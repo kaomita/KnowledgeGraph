@@ -12,24 +12,34 @@ from datetime import datetime
 from django.http import QueryDict
 from django.core.paginator import Paginator, EmptyPage
 
-
+from app.utils.convert import convert_pdf_to_txt
 
 # 上传文献，有权限控制（开发中，测试中）
-# TODO：
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
+        # =============== 解析请求参数 ===============
         title = request.POST.get('title')
+        file_type = request.POST.get('file_type')
         content = request.POST.get('content')
+        # =============== content 文件解码 =============
+        if file_type == 'pdf':
+            content = convert_pdf_to_txt(content)
+            
+        # =============== 获取token信息 ===============
+        user_email = request.user_info
+        # =============== 获取数据库信息 ===============
+        user = User.objects.filter(email=user_email).first()
+        # =============== 保存到本地数据库 ===============
         create_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 获取当前时间戳
         update_time = create_time
-        user = User.objects.filter(email=request.user_info).first()
         user_name = user.username
         file = Document(create_time=create_time, update_time=update_time, title=title,
                         content=content, user_name=user_name)
         file.save()
-        # 调用模型，返回 QA List
-
+        
+        # ============ 调用服务器模型返回 QA List ============
+        json_response(200, '文献提交成功')
         qa_list = call_model(content)
         for qa in qa_list:
             qa_pair = QApair(question=qa['question'], answer=qa['answer'], document_id=file.pk)

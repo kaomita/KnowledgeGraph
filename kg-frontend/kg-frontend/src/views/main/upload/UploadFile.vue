@@ -25,7 +25,7 @@
         >
           <li>
             <div class="filename">&nbsp;&nbsp;{{ file.title }}.txt</div>
-            
+
             <div class="el-icon-close" @click="deleteFile(index)"></div>
           </li>
         </div>
@@ -35,7 +35,9 @@
       <div class="button" @click="submit">
         <i class="el-icon-upload2"></i>
       </div>
-      <span class="text">&nbsp;&nbsp;&nbsp;只能上传txt文件,且不超过4GB</span>
+      <span class="text"
+        >&nbsp;&nbsp;&nbsp;支持上传txt文件和pdf文件,且不超过4GB</span
+      >
     </div>
     <div style="float: left" class="file_list">
       <ul>
@@ -90,7 +92,7 @@
     ></custom-modal>
   </div>
 </template>
-  <script>
+<script>
 import { uploadFile, getAllFiles, getFileDetail, deleteFile } from "api/file";
 import CustomModal from "components/CustomModal.vue";
 import { saveAs } from "file-saver";
@@ -166,6 +168,7 @@ export default {
         // });
         uploadFile({
           title: file.title,
+          file_type: file.file_type,
           content: file.content,
         });
         this.$message.success("上传成功,模型正在解析");
@@ -176,15 +179,36 @@ export default {
     },
     beforeUpload(file) {
       //读取文件名和内容并且添加到fileList中
-      if (file.name.split(".")[1] != "txt") {
-        this.$message.error("文件类型错误，只能上传txt文件");
-      } else {
+      //读取文件名和内容并且添加到fileList中
+      const fileType = file.name.split(".")[1];
+      console.log(fileType);
+      if (fileType != "txt" && fileType != "pdf") {
+        this.$message.error("文件类型错误, 只能上传txt或pdf文件");
+      } else if (fileType == "txt") {
         const reader = new FileReader();
         reader.readAsText(file);
         reader.onload = (e) => {
           this.toBeUploadedFiles.push({
             title: file.name.split(".")[0],
+            file_type: "txt",
             content: e.target.result,
+          });
+        };
+      } else if (fileType == "pdf") {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const base64String = e.target.result.replace(
+            /^data:(.*;base64,)?/,
+            ""
+          );
+          if (base64String.length % 4 > 0) {
+            base64String += "=".repeat(4 - (base64String.length % 4));
+          }
+          this.toBeUploadedFiles.push({
+            title: file.name.split(".")[0],
+            file_type: "pdf",
+            content: base64String,
           });
         };
       }
@@ -233,7 +257,7 @@ export default {
 </script>
 <style scoped>
 .filename {
-    float: left;
+  float: left;
 }
 .block :deep(.el-cascader) {
   width: 170px;
@@ -333,4 +357,3 @@ h3 {
   cursor: pointer;
 }
 </style>
- 
