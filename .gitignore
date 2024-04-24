@@ -1,5 +1,6 @@
 .DS_Store
-kg-frontend/kg-frontend/node_modules
+# ignore all node_modules file
+**/node_modules
 /dist
 
 
