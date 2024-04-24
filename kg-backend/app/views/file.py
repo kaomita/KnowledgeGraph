@@ -12,7 +12,7 @@ from datetime import datetime
 from django.http import QueryDict
 from django.core.paginator import Paginator, EmptyPage
 
-
+from app.utils.convert import convert_pdf_to_txt
 
 # 上传文献，有权限控制（开发中，测试中）
 @csrf_exempt
@@ -20,7 +20,12 @@ def upload_file(request):
     if request.method == 'POST':
         # =============== 解析请求参数 ===============
         title = request.POST.get('title')
+        file_type = request.POST.get('file_type')
         content = request.POST.get('content')
+        # =============== content 文件解码 =============
+        if file_type == 'pdf':
+            content = convert_pdf_to_txt(content)
+            
         # =============== 获取token信息 ===============
         user_email = request.user_info
         # =============== 获取数据库信息 ===============
