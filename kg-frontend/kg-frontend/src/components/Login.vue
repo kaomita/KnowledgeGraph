@@ -1,80 +1,54 @@
 <template>
   <div class="body">
-    <div class="fixed">
-      <div class="form-demo">
+    <div class="bg"></div>
+    <div class="container" :class="{ 'right-panel-active': isRightPanelActive }">
+      <!-- Sign In -->
+      <div class="container__form container--signin">
+        <form action="#" class="form" id="form2">
+          <h2 class="form__title">Sign In</h2>
+          <input type="email" v-model="email" placeholder="Email" class="input" />
+          <input type="password" v-model="password" placeholder="Password" class="input" />
+          <button class="btn" @click="login">sign in</button>
+          <div class="link">
+            New here? <a class="linka" href="#" @click="goSignUp">Sign Up</a>
+          </div>
+          <!-- <a href="#" class="link">Forgot your password?</a> -->
+        </form>
+      </div>
 
-        <input
-          type="checkbox"
-          style="display: none"
-          id="change"
-          @click="_switch"
-          v-model="checked"
-        />
-        <label for="change">&lt;&lt;</label>
+      <!-- Sign Up -->
+      <div class="container__form container--signup" v-if="showSignup">
+        <form action="#" class="form" id="form1">
+          <h2 class="form__title">Sign Up</h2>
+          <input type="email" v-model="email" placeholder="Email" class="input" />
+          <input type="text" v-model="username" placeholder="User Name" class="input" />
+          <input type="password" v-model="password" placeholder="Password" class="input" />
+          <input type="text" v-model="code" placeholder="Verification Code" class="input verify" />
+          <div class="code el-icon-message" v-if="showTime === null" @click="sendCode"></div>
+          <div class="code data" v-else>{{ showTime }}</div>
+          <button class="btn" @click="register">sign up</button>
+          <div class="link">
+            Already have an account? <a class="linka" href="#" @click="goSignIn">Sign In</a>
+          </div>
+        </form>
+      </div>
 
-        <div class="turn">
-          <div class="over">
-            <form action="" class="login">
-              <h1>欢迎回来</h1>
-              <input
-                type="text"
-                v-model="email"
-                placeholder="请输入邮箱"
-                class="input"
-              />
-              <input
-                type="password"
-                v-model="password"
-                placeholder="请输入密码"
-                class="input"
-                @keyup.enter="login"
-              />
-              <div class="btn input" @click="login">登录</div>
-              <div class="jump" @click="goRegister">还没有账号?去注册</div>
-            </form>
-
-            <form action="" class="sign">
-              <div class="empty"></div>
-              <h1>加入我们</h1>
-              <input
-                type="text"
-                v-model="email"
-                placeholder="请输入邮箱"
-                class="input first"
-              />
-              <input
-                type="text"
-                v-model="username"
-                placeholder="请输入用户名"
-                class="input"
-              />
-              <input
-                type="password"
-                v-model="password"
-                placeholder="请输入密码"
-                class="input"
-              />
-              <input
-                type="text"
-                v-model="code"
-                placeholder="请输入验证码"
-                class="input verify"
-                @keyup.enter="register"
-              />
-              <div class="btn input" @click="register">注册</div>
-              <div
-                class="code el-icon-message"
-                v-if="showTime === null"
-                @click="sendCode"
-              ></div>
-              <div class="code data" v-else>{{ showTime }}</div>
-            </form>
+      <!-- Overlay -->
+      <div class="container__overlay">
+        <div class="overlay">
+          <div class="overlay__panel overlay--left">
+            <h1 class="overlay-content">Welcome Back!</h1>
+          </div>
+          <div class="overlay__panel overlay--right">
+            <h1 class="overlay-content">Hello, Friend!</h1>
+            <p>Enter your personal details and start journey with knowledge graph</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import { login, register, sendCode } from "api/user";
 export default {
@@ -82,6 +56,8 @@ export default {
   components: {},
   data() {
     return {
+      isRightPanelActive: true,
+      showSignup: false,
       email: "",
       password: "",
       username: "",
@@ -92,6 +68,16 @@ export default {
     };
   },
   methods: {
+    goSignIn() {
+      this.isRightPanelActive = true;
+    },
+
+    goSignUp() {
+      this.isRightPanelActive = false;
+      this.showSignup = true;
+    },
+    //     fistForm.addEventListener("submit", (e) => e.preventDefault()),
+    // secondForm.addEventListener("submit", (e) => e.preventDefault());
     async login() {
       if (this.email == "" || this.password == "") {
         this.$message.error("请输入邮箱和密码");
@@ -103,7 +89,12 @@ export default {
       this.$router.push("/main/upload");
     },
     async register() {
-      if (this.email == "" || this.password == "" || this.username == "" || this.code == "") {
+      if (
+        this.email == "" ||
+        this.password == "" ||
+        this.username == "" ||
+        this.code == ""
+      ) {
         this.$message.error("请输入完整信息");
         return;
       }
@@ -116,15 +107,6 @@ export default {
       if (res.status == 200) {
         this.login();
       }
-    },
-    _switch() {
-      this.email = "";
-      this.password = "";
-      this.username = "";
-    },
-    goRegister() {
-      this.checked = !this.checked;
-      this._switch();
     },
     sendCode() {
       if (this.showTime != null) {
@@ -167,227 +149,287 @@ export default {
   },
 };
 </script>
-<style scoped>
-.body {
-  background-color: #abdde8;
 
-  overflow: hidden;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: url(assets/img/background7.jpg) no-repeat center center;
-  background-size: cover;
+<style>
+:root {
+  /* COLORS */
+  --white: #e9e9e9;
+  --gray: #333;
+  --blue: #0367a6;
+  --lightblue: #008997;
+
+  /* RADII */
+  --button-radius: 0.7rem;
+
+  /* SIZES */
+  --max-width: 830px;
+  --max-height: 470px;
+
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
+
+
+.body {
+  position: relative;
+  align-items: center;
+  background-color: var(--white);
+  display: grid;
+  height: 100vh;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow:hidden;
+}
+
+.body .bg {
+  transform: scale(1.2);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/img/background3.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(4px);
+}
+
+.form__title {
+  font-weight: 300;
+  margin: 0;
+  margin-bottom: 1.25rem;
+}
+
+.link {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin: 1.5rem 0;
+  text-decoration: none;
+}
+
+.container {
+  background-color: var(--white);
+  border-radius: var(--button-radius);
+  box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
+    0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
+  height: var(--max-height);
+  max-width: var(--max-width);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  backdrop-filter: blur(5px);
+}
+
+.container__form {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  transition: all 0.6s ease-in-out;
+}
+
+.overlay-content {
+  font-weight: 800;
+  margin: 0;
+  margin-bottom: 1.25rem;
+}
+
+
 .code {
   position: absolute;
-  top: 280px;
-  left: 300px;
+  top: 248px;
+  left: 338px;
   color: #4aa4ad;
   font-size: 40px;
   transform: translate(-50%);
   cursor: pointer;
 }
 
-.fixed {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.8;
+.verify {
+  margin-left: -78px !important;
+  width: 75% !important;
+  /* background-color: #59c2c5; */
 }
 
-.form-demo {
-  position: relative;
-  width: 400px;
-  height: 600px;
-  opacity: 0.8;
-}
-
-/* 切换按钮 */
-#change:checked+label,
-/* +用来选择同级后面最近的元素  */
-#change:not(:checked)+label {
-  color: rgb(249, 234, 35);
-  width: 10px;
-  padding: 8px 0;
-  font-size: 40px;
-  font-weight: 600;
-  position: absolute;
-  top: 112px;
-  left: -70px;
-  transform: translate(-50%);
-  /* border-radius: 8px; */
-  cursor: pointer;
-  /* text-align: center; */
-}
-
-/* 旋转体 */
-.turn {
-  width: 100%;
-  height: 400px;
-  position: absolute;
-  top: 100px;
-  perspective: 800px;
-  /* 旋转的时候的透视效果 */
-}
-
-.over {
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: all 1.6s ease;
-  /* 旋转持续时间 */
-  /* ease是慢快慢 */
-}
-
-#change:checked ~ .turn .over {
-  transform: rotateY(180deg);
-}
-
-form {
-  position: absolute;
-  background-color: #fcfbfa;
-  height: 100%;
-  border-radius: 8px;
-  transform-style: preserve-3d;
-  text-align: center;
-}
-
-.sign {
-  transform: rotateY(180deg);
-  position: relative;
-}
-
-h1,
-h2 {
-  color: #1f2029;
-  user-select: none;
+.linka {
+  color: rgb(60, 60, 228);
+  /* 设置链接的颜色为蓝色 */
+  text-decoration: underline;
+  /* 添加下划线 */
 }
 
 h1 {
-  margin-top: 38px;
-  transform-style: preserve-3d;
-  transform: translate3d(0, 0, 1px);
-}
-.input {
-  /* background-color: #4E495D; */
-  width: 70%;
-  height: 48px;
-  line-height: 48px;
-  /* border-radius: 8px; */
-  margin-bottom: 20px;
-  margin-top: 12px;
-  padding: 0;
-  font-size: 22px;
-  /* color: #c4c3ca; */
-  font-weight: 500;
-  outline: none;
-  border: none;
-  /* box-shadow: 0 4px 8px 0 rgba(78, 73, 79, .5); */
-  transform-style: preserve-3d;
-  transform: translate3d(0, 0, 1px);
-  border: none;
-  border-bottom: 2px solid silver;
-}
-.login .input {
-  /* background-color: #4E495D; */
-  width: 70%;
-  height: 48px;
-  /* border-radius: 8px; */
-  margin-bottom: 20px;
-  margin-top: 12px;
-  padding: 0;
-  font-size: 22px;
-  /* color: #c4c3ca; */
-  font-weight: 500;
-  outline: none;
-  border: none;
-  /* box-shadow: 0 4px 8px 0 rgba(78, 73, 79, .5); */
-  transform-style: preserve-3d;
-  transform: translate3d(0, 0, 1px);
-  border: none;
-  border-bottom: 2px solid silver;
+	font-weight: bold;
+	margin: 0;
+  color: var(--white);
 }
 
-.login .input:nth-child(-n + 2) {
-  margin: 20px 0;
+p {
+  color: var(--white);
+	font-size: 18px;
+	font-weight: 100;
+	line-height: 30px;
+	letter-spacing: 1px;
+	margin: 17px 10px 30px;
 }
 
-.sign .input {
-  /* background-color: #4E495D; */
-  width: 70%;
-  height: 40px;
-  /* background-color: #59c2c5; */
-  /* border-radius: 8px; */
-  /* margin-bottom: 20px; */
-  margin-top: 1px;
-  padding: 0;
-  font-size: 22px;
-  /* color: #c4c3ca; */
-  font-weight: 500;
-  outline: none;
-  border: none;
-  /* box-shadow: 0 4px 8px 0 rgba(78, 73, 79, .5); */
-  transform-style: preserve-3d;
-  transform: translate3d(0, 0, 1px);
-  border: none;
-  border-bottom: 2px solid silver;
+.container--signup {
+    left: 0;
+    width: 50%;
+    z-index: 2;
 }
-.sign .btn {
-  line-height: 40px;
+ 
+.container.right-panel-active .container--signup {
+    transform: translateX(100%);
 }
-.sign h1 {
-  margin-top: 20px !important;
+ 
+.container--signin {
+    left: 0;
+    opacity: 0;
+    width: 50%;
+    z-index: 1;
 }
-.login .btn {
-  margin-top: 20px;
+ 
+.container.right-panel-active .container--signin {
+    animation: show 0.6s;
+    opacity: 1;
+    transform: translateX(100%);
+    z-index: 5;
 }
-.empty {
-  height: 15px;
+
+
+.container__overlay {
+  height: 100%;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  transition: transform 0.6s ease-in-out;
+  width: 50%;
+  z-index: 100;
 }
+
+.container.right-panel-active .container__overlay {
+  transform: translateX(-100%);
+}
+
+.overlay {
+  background-color: var(--lightblue);
+  background: url("../assets/img/background3.jpg");
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+  left: -100%;
+  position: relative;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+  width: 200%;
+}
+
+.container.right-panel-active .overlay {
+  transform: translateX(50%);
+}
+
+.overlay__panel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+  width: 50%;
+}
+
+.overlay--left {
+  transform: translateX(-20%);
+}
+
+.container.right-panel-active .overlay--left {
+  transform: translateX(0);
+}
+
+.overlay--right {
+  right: 0;
+  transform: translateX(0);
+}
+
+.container.right-panel-active .overlay--right {
+  transform: translateX(20%);
+}
+
 .btn {
-  background-color: #59c2c5;
-  border: none;
-  width: 280px;
-  font-size: 24px;
-  font-weight: 600;
-  padding: 6px 0;
-  color: white;
-  border-radius: 8px;
-  margin-top: 15px;
-  margin-left: 60px;
+  background-color: rgb(24, 122, 146);
+  border-radius: 20px;
+  border: 1px solid rgb(24, 122, 146);
+  color: var(--white);
   cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  padding: 0.9rem 4rem;
+  /* text-transform: uppercase; */
+  transition: transform 80ms ease-in;
+}
+
+.form>.btn {
+  margin-top: 1.5rem;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.form {
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 3rem;
+  height: 100%;
   text-align: center;
 }
-.jump {
-  width: auto;
-  display: inline-block;  /*内联块级元素*/
-  margin-left: auto;
-  margin-right: auto;    /*左右居中*/
-  color: #1842ff;
-  cursor: pointer;
-  /* border-bottom:1px solid silver; */
-  text-decoration: underline;
-  text-decoration-color: #1842ff;
-  text-decoration-thickness: 1px;
-  transform-style: preserve-3d;
-  transform: translate3d(0, 0, 1px);
-  padding-left: 0%;
-  padding-right: 0%;
+
+.input {
+  background-color: #fff;
+  display: block;
+  padding: 0.6rem 0.9rem;
+  font-size: 14px;
+  line-height: 20px;
+  color: #c9d1d9;
+  /* background-color: #0d1117; */
+  border: 1px solid #cfe0f4;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: 0 0 transparent;
+  width: 100%;
+  margin-bottom: 16px;
 }
-.first {
-  margin-top: 20px !important;
-}
-.verify {
-  margin-left: -78px !important;
-  width: 50% !important;
-  /* background-color: #59c2c5; */
-}
-.data {
-  font-size: 20px;
-  color: #4aa4ad;
-  top: 290px;
+
+@keyframes show {
+
+  0%,
+  49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
 }
 </style>
