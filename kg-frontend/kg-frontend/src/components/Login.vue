@@ -1,47 +1,90 @@
 <template>
-  <div class="body">
-    <div class="bg"></div>
-    <div class="container" :class="{ 'right-panel-active': isRightPanelActive }">
-      <!-- Sign In -->
-      <div class="container__form container--signin">
-        <form action="#" class="form" id="form2">
-          <h2 class="form__title">Sign In</h2>
-          <input type="email" v-model="email" placeholder="Email" class="input" />
-          <input type="password" v-model="password" placeholder="Password" class="input" />
-          <button class="btn" @click="login">sign in</button>
-          <div class="link">
-            New here? <a class="linka" href="#" @click="goSignUp">Sign Up</a>
-          </div>
-          <!-- <a href="#" class="link">Forgot your password?</a> -->
-        </form>
-      </div>
+  <div class="root">
+    <div class="body">
+      <div class="bg"></div>
+      <div
+        class="container"
+        :class="{ 'right-panel-active': isRightPanelActive }"
+      >
+        <!-- Sign In -->
+        <div class="container__form container--signin">
+          <form action="#" class="form" id="form2">
+            <h2 class="form__title">Sign In</h2>
+            <input
+              type="email"
+              v-model="email"
+              placeholder="Email"
+              class="input"
+            />
+            <input
+              type="password"
+              v-model="password"
+              placeholder="Password"
+              class="input"
+            />
+            <button class="btn" @click="login">sign in</button>
+            <div class="link">
+              New here? <a class="linka" href="#" @click="goSignUp">Sign Up</a>
+            </div>
+            <!-- <a href="#" class="link">Forgot your password?</a> -->
+          </form>
+        </div>
 
-      <!-- Sign Up -->
-      <div class="container__form container--signup" v-if="showSignup">
-        <form action="#" class="form" id="form1">
-          <h2 class="form__title">Sign Up</h2>
-          <input type="email" v-model="email" placeholder="Email" class="input" />
-          <input type="text" v-model="username" placeholder="User Name" class="input" />
-          <input type="password" v-model="password" placeholder="Password" class="input" />
-          <input type="text" v-model="code" placeholder="Verification Code" class="input verify" />
-          <div class="code el-icon-message" v-if="showTime === null" @click="sendCode"></div>
-          <div class="code data" v-else>{{ showTime }}</div>
-          <button class="btn" @click="register">sign up</button>
-          <div class="link">
-            Already have an account? <a class="linka" href="#" @click="goSignIn">Sign In</a>
-          </div>
-        </form>
-      </div>
+        <!-- Sign Up -->
+        <div class="container__form container--signup" v-if="showSignup">
+          <form action="#" class="form" id="form1">
+            <h2 class="form__title">Sign Up</h2>
+            <input
+              type="email"
+              v-model="email"
+              placeholder="Email"
+              class="input"
+            />
+            <input
+              type="text"
+              v-model="username"
+              placeholder="User Name"
+              class="input"
+            />
+            <input
+              type="password"
+              v-model="password"
+              placeholder="Password"
+              class="input"
+            />
+            <input
+              type="text"
+              v-model="code"
+              placeholder="Verification Code"
+              class="input verify"
+            />
+            <div
+              class="code el-icon-message"
+              v-if="showTime === null"
+              @click="sendCode"
+            ></div>
+            <div class="code data" v-else>{{ showTime }}</div>
+            <button class="btn" @click="register">sign up</button>
+            <div class="link">
+              Already have an account?
+              <a class="linka" href="#" @click="goSignIn">Sign In</a>
+            </div>
+          </form>
+        </div>
 
-      <!-- Overlay -->
-      <div class="container__overlay">
-        <div class="overlay">
-          <div class="overlay__panel overlay--left">
-            <h1 class="overlay-content">Welcome Back!</h1>
-          </div>
-          <div class="overlay__panel overlay--right">
-            <h1 class="overlay-content">Hello, Friend!</h1>
-            <p>Enter your personal details and start journey with knowledge graph</p>
+        <!-- Overlay -->
+        <div class="container__overlay">
+          <div class="overlay">
+            <div class="overlay__panel overlay--left">
+              <h1 class="overlay-content">Welcome Back!</h1>
+            </div>
+            <div class="overlay__panel overlay--right">
+              <h1 class="overlay-content">Hello, Friend!</h1>
+              <p>
+                Enter your personal details and start journey with knowledge
+                graph
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -70,14 +113,19 @@ export default {
   methods: {
     goSignIn() {
       this.isRightPanelActive = true;
+      this._switch();
     },
 
     goSignUp() {
       this.isRightPanelActive = false;
       this.showSignup = true;
+      this._switch();
     },
-    //     fistForm.addEventListener("submit", (e) => e.preventDefault()),
-    // secondForm.addEventListener("submit", (e) => e.preventDefault());
+    _switch() {
+      this.email = "";
+      this.password = "";
+      this.username = "";
+    },
     async login() {
       if (this.email == "" || this.password == "") {
         this.$message.error("请输入邮箱和密码");
@@ -150,8 +198,8 @@ export default {
 };
 </script>
 
-<style>
-:root {
+<style scoped>
+.root {
   /* COLORS */
   --white: #e9e9e9;
   --gray: #333;
@@ -170,7 +218,6 @@ export default {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-
 .body {
   position: relative;
   align-items: center;
@@ -183,7 +230,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  overflow:hidden;
+  overflow: hidden;
 }
 
 .body .bg {
@@ -211,7 +258,7 @@ export default {
 }
 
 .container {
-  background-color: var(--white);
+  /* background-color: var(--white); */
   border-radius: var(--button-radius);
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
@@ -235,7 +282,6 @@ export default {
   margin: 0;
   margin-bottom: 1.25rem;
 }
-
 
 .code {
   position: absolute;
@@ -261,44 +307,43 @@ export default {
 }
 
 h1 {
-	font-weight: bold;
-	margin: 0;
+  font-weight: bold;
+  margin: 0;
   color: var(--white);
 }
 
 p {
   color: var(--white);
-	font-size: 18px;
-	font-weight: 100;
-	line-height: 30px;
-	letter-spacing: 1px;
-	margin: 17px 10px 30px;
+  font-size: 18px;
+  font-weight: 100;
+  line-height: 30px;
+  letter-spacing: 1px;
+  margin: 17px 10px 30px;
 }
 
 .container--signup {
-    left: 0;
-    width: 50%;
-    z-index: 2;
-}
- 
-.container.right-panel-active .container--signup {
-    transform: translateX(100%);
-}
- 
-.container--signin {
-    left: 0;
-    opacity: 0;
-    width: 50%;
-    z-index: 1;
-}
- 
-.container.right-panel-active .container--signin {
-    animation: show 0.6s;
-    opacity: 1;
-    transform: translateX(100%);
-    z-index: 5;
+  left: 0;
+  width: 50%;
+  z-index: 2;
 }
 
+.container.right-panel-active .container--signup {
+  transform: translateX(100%);
+}
+
+.container--signin {
+  left: 0;
+  opacity: 0;
+  width: 50%;
+  z-index: 1;
+}
+
+.container.right-panel-active .container--signin {
+  animation: show 0.6s;
+  opacity: 1;
+  transform: translateX(100%);
+  z-index: 5;
+}
 
 .container__overlay {
   height: 100%;
@@ -379,7 +424,7 @@ p {
   transition: transform 80ms ease-in;
 }
 
-.form>.btn {
+.form > .btn {
   margin-top: 1.5rem;
 }
 
@@ -408,7 +453,7 @@ p {
   padding: 0.6rem 0.9rem;
   font-size: 14px;
   line-height: 20px;
-  color: #c9d1d9;
+  /* color: #c9d1d9; */
   /* background-color: #0d1117; */
   border: 1px solid #cfe0f4;
   border-radius: 6px;
@@ -419,7 +464,6 @@ p {
 }
 
 @keyframes show {
-
   0%,
   49.99% {
     opacity: 0;
