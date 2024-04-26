@@ -149,13 +149,15 @@ export default {
       ) {
         this.$message.error("请输入完整信息");
         return;
+      } else {
+        const res = await register({
+          email: this.email,
+          password: this.password,
+          username: this.username,
+          verificationCode: this.code,
+        });
       }
-      const res = await register({
-        email: this.email,
-        password: this.password,
-        username: this.username,
-        verificationCode: this.code,
-      });
+
       if (res.status == 200) {
         this.login();
       }
@@ -262,7 +264,7 @@ export default {
 }
 
 .container {
-  /* background-color: var(--white); */
+  background-color: var(--white);
   border-radius: var(--button-radius);
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
