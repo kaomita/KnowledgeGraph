@@ -3,7 +3,7 @@
     <div><slot name="nav"></slot></div>
   </div>
 </template>
-  <script>
+<script>
 export default {
   name: "NavBarItem",
   components: {},
@@ -25,9 +25,9 @@ export default {
   },
 };
 </script>
-  <style scoped>
+<style scoped>
 .active {
-    background-color: #5AA4AE;
-  color: #fff;
+  background-color: #e0e7ff;
+  color: #4338ca;
 }
 </style>

@@ -264,7 +264,7 @@ export default {
   will-change: transform;
 }
 .settings {
-  background-color: #5aa4ae;
+  background-color: #4338ca;
   width: 20%;
   height: 100%;
   border-bottom-right-radius: 10px;

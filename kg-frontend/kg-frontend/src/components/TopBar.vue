@@ -1,7 +1,7 @@
 <template>
   <div class="top-container">
-    <el-dropdown class="avatar">
-      <!-- <img src="https://github.githubassets.com/favicons/favicon.svg" /> -->
+    <!-- <el-dropdown class="avatar">
+      <img src="https://github.githubassets.com/favicons/favicon.svg" />
       <span>{{ this.$store.getters.getUser }} ({{ identity }})</span>
       <el-dropdown-menu slot="dropdown" class="menu">
         <el-dropdown-item @click.native="layout" icon="el-icon-circle-close">
@@ -11,16 +11,22 @@
           >&nbsp;注销账号</el-dropdown-item
         >
       </el-dropdown-menu>
-    </el-dropdown>
-
-    <div class="username">HZAU知识工程与元学习团队</div>
+    </el-dropdown> -->
+    <mallki
+      class-name="mallki-text username"
+      text="HZAU知识工程与元学习团队"
+      style="font-size: 20px"
+    />
   </div>
 </template>
 <script>
 import { layoff, layout } from "api/user";
+import Mallki from "./TextHoverEffect/Mallki.vue";
 export default {
   name: "TopBar",
-  components: {},
+  components: {
+    Mallki,
+  },
   data() {
     return {
       search: "",
@@ -58,13 +64,19 @@ export default {
   },
 };
 </script>
-  <style scoped>
+<style scoped>
 .top-container {
   width: 100%;
   height: 60px;
-  background-color: #5AA4AE;
-  color:#181818
-;
+  background-color: #e0e7ff;
+  color: #181818;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  transition: transform 0.3s ease-in-out; /* Add transition */
+}
+
+.top-container:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.005);
 }
 .avatar {
   position: absolute;
@@ -74,7 +86,7 @@ export default {
   width: 120px;
   height: 50px;
   line-height: 50px;
-  color: #fff;
+  color: #000000;
   /* background-color: #fff; */
 }
 .avatar img {
@@ -83,8 +95,13 @@ export default {
 }
 .username {
   float: left;
+  .username {
+    float: left;
+    margin: 20px 0 0 30px;
+    color: #000000;
+    font-weight: bold;
+  }
   margin: 20px 0 0 30px;
-  color: #fff;
 }
 .layout {
   float: right;
@@ -97,4 +114,3 @@ export default {
   font-size: 14px;
 }
 </style>
-  

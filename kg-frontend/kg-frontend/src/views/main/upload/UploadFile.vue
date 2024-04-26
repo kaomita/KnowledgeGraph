@@ -12,7 +12,7 @@
           multiple
           :limit="10"
           :file-list="toBeUploadedFiles"
-          accept=".txt"
+          accept=".txt, .pdf"
         >
           <i slot="default" class="el-icon-plus"></i>
         </el-upload>
@@ -24,7 +24,9 @@
           :key="index"
         >
           <li>
-            <div class="filename">&nbsp;&nbsp;{{ file.title }}.txt</div>
+            <div class="filename">
+              &nbsp;&nbsp;{{ file.title }}.{{ file.file_type }}
+            </div>
 
             <div class="el-icon-close" @click="deleteFile(index)"></div>
           </li>
@@ -32,12 +34,10 @@
       </div>
     </div>
     <div class="btn">
-      <div class="button" @click="submit">
+      <div v-waves class="button" @click="submit">
         <i class="el-icon-upload2"></i>
       </div>
-      <span class="text"
-        >&nbsp;&nbsp;&nbsp;支持上传txt文件和pdf文件,且不超过4GB</span
-      >
+      <span class="text">&nbsp;&nbsp;&nbsp;支持上传txt文件和pdf文件</span>
     </div>
     <div style="float: left" class="file_list">
       <ul>
@@ -74,7 +74,9 @@
           </el-table>
         </li>
       </ul>
+      <div class="box" style="height: 20px"></div>
       <el-pagination
+        background
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="params.page"
@@ -96,9 +98,11 @@
 import { uploadFile, getAllFiles, getFileDetail, deleteFile } from "api/file";
 import CustomModal from "components/CustomModal.vue";
 import { saveAs } from "file-saver";
+import waves from "@/directive/waves";
 export default {
   name: "UploadFile",
   components: { CustomModal },
+  directives: { waves },
   data() {
     return {
       //   tableDate: [],
@@ -305,14 +309,14 @@ h3 {
 }
 .btn {
   position: absolute;
-  left: 450px;
-  top: 250px;
+  left: 520px;
+  top: 230px;
 }
 .btn .button {
-  width: 50px;
-  height: 30px;
-  line-height: 30px;
-  background-color: #5aa4ae;
+  width: 52px;
+  height: 32px;
+  line-height: 32px;
+  background-color: #a3b6f7;
   text-align: center;
   border-radius: 5px;
   font-size: 20px;
@@ -320,8 +324,11 @@ h3 {
   float: left;
   color: #fff;
 }
+.btn .button:hover {
+  background-color: #809cf5;
+}
 .text {
-  font-size: 10px;
+  font-size: 12px;
   float: left;
 }
 .file_list {

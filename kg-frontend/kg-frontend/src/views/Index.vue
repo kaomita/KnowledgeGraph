@@ -27,7 +27,7 @@ export default {
   /* 上，右，下，左 */
   margin: 80px 100px 0px 200px;
   margin-top: 80px;
-  margin-left: 230px;
+  margin-left: 300px;
   height: 665px;
   /* overflow-y: scroll; */
 }
