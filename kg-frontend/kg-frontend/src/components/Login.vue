@@ -22,7 +22,7 @@
               placeholder="Password"
               class="input"
             />
-            <button class="btn" @click="login">sign in</button>
+            <button v-waves class="btn" @click="login">sign in</button>
             <div class="link">
               New here? <a class="linka" href="#" @click="goSignUp">Sign Up</a>
             </div>
@@ -64,7 +64,7 @@
               @click="sendCode"
             ></div>
             <div class="code data" v-else>{{ showTime }}</div>
-            <button class="btn" @click="register">sign up</button>
+            <button v-waves class="btn" @click="register">sign up</button>
             <div class="link">
               Already have an account?
               <a class="linka" href="#" @click="goSignIn">Sign In</a>
@@ -94,9 +94,13 @@
 
 <script>
 import { login, register, sendCode } from "api/user";
+import waves from "@/directive/waves";
 export default {
   name: "Login",
   components: {},
+  directives: {
+    waves,
+  },
   data() {
     return {
       isRightPanelActive: true,
@@ -145,13 +149,15 @@ export default {
       ) {
         this.$message.error("请输入完整信息");
         return;
+      } else {
+        const res = await register({
+          email: this.email,
+          password: this.password,
+          username: this.username,
+          verificationCode: this.code,
+        });
       }
-      const res = await register({
-        email: this.email,
-        password: this.password,
-        username: this.username,
-        verificationCode: this.code,
-      });
+
       if (res.status == 200) {
         this.login();
       }
@@ -258,7 +264,7 @@ export default {
 }
 
 .container {
-  /* background-color: var(--white); */
+  background-color: var(--white);
   border-radius: var(--button-radius);
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);

@@ -36,7 +36,7 @@
         <i class="el-icon-upload2"></i>
       </div>
       <span class="text"
-        >&nbsp;&nbsp;&nbsp;指出上传txt文件和pdf文件,且不超过4GB</span
+        >&nbsp;&nbsp;&nbsp;支持上传txt文件和pdf文件,且不超过4GB</span
       >
     </div>
     <div style="float: left" class="file_list">
