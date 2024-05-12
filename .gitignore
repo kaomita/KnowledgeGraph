@@ -1,7 +1,7 @@
 .DS_Store
 # ignore all node_modules file
 **/node_modules
-/dist
+**/dist
 
 
 # local env files
@@ -35,4 +35,7 @@ __pycache__/
 kg-backend/app/utils/testData/1.txt
 kg-backend/app/utils/testData/predictions_list.json
 
+*.pyc
 
+# test
+.test/

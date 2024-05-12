@@ -24,7 +24,7 @@
             />
             <button v-waves class="btn" @click="login">sign in</button>
             <div class="link">
-              New here? <a class="linka" href="#" @click="goSignUp">Sign Up</a>
+              New here? <a class="linka" @click="goSignUp">Sign Up</a>
             </div>
             <!-- <a href="#" class="link">Forgot your password?</a> -->
           </form>
@@ -67,7 +67,7 @@
             <button v-waves class="btn" @click="register">sign up</button>
             <div class="link">
               Already have an account?
-              <a class="linka" href="#" @click="goSignIn">Sign In</a>
+              <a class="linka" @click="goSignIn">Sign In</a>
             </div>
           </form>
         </div>
@@ -135,10 +135,12 @@ export default {
         this.$message.error("请输入邮箱和密码");
         return;
       }
-      const res = await login({ email: this.email, password: this.password });
-      this.$store.commit("updateUser", res.data.data);
-      this.$message.success("登录成功");
-      this.$router.push("/main/upload");
+      else {
+        const res = await login({ email: this.email, password: this.password });
+        this.$store.commit("updateUser", res.data.data);
+        this.$message.success("登录成功");
+        this.$router.push("/main/upload");
+      }
     },
     async register() {
       if (

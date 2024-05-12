@@ -1,18 +1,18 @@
 <template>
   <div>
-    <el-input
-      placeholder="请输入提问"
+    <md-input
       v-model="question"
       class="input-with-select"
+      icon="el-icon-search"
+      name="title"
+      :placeholder="placeholderText"
       @keyup.enter.native="getSearchResult"
       @input="highlightKeyword(question)"
+      @click.native="placeholderText = ''"
     >
-      <i
-        class="el-icon-search el-input__icon"
-        slot="suffix"
-        @click="getSearchResult"
-      ></i>
-    </el-input>
+      <i class="el-icon-search el-input__icon" style="color: #4338ca"></i>
+      <span class="text" style="color: #4338ca">请输入提问</span>
+    </md-input>
     <el-button type="primary" @click="getAllAnswer" class="getallAnswer-button"
       >查询</el-button
     >
@@ -68,8 +68,9 @@
         </el-table-column>
       </el-table>
     </div>
-
+    <div class="box" style="height: 20px"></div>
     <el-pagination
+      background
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="params.page"
@@ -106,13 +107,15 @@
 import { getAllAnswer, deleteAnswer, updateAnswer, search } from "@/api/answer";
 import { getFileDetail } from "@/api/file";
 import CustomModal from "components/CustomModal.vue";
+import MdInput from "components/MDinput";
 export default {
   name: "Answer",
-  components: { CustomModal },
+  components: { CustomModal, MdInput },
   data() {
     return {
       pairs: [],
       question: "",
+      placeholderText: "请输入提问",
       total: 100,
       isAll: true,
       params: {
@@ -240,7 +243,7 @@ export default {
 <style scoped>
 .input-with-select {
   width: 500px;
-  margin-top: 30px;
+  margin-top: 120px;
   margin-left: 626px;
 }
 
@@ -253,9 +256,12 @@ export default {
 }
 .getallAnswer-button {
   position: absolute;
-  left: 260px;
+  left: 400px;
   top: 110px;
-  background-color: #5aa4ae;
+  background-color: #809cf5;
+}
+.getallAnswer-button:hover {
+  background-color: #a3b6f7;
 }
 .table {
   margin: 0 auto;
@@ -299,4 +305,3 @@ div :deep(.el-table)::before {
   background-color: transparent;
 }
 </style>
-
