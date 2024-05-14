@@ -12,7 +12,7 @@ Vue.use(ElementUI);
 Vue.use(VueClipBoard);
 
 Vue.config.productionTip = false
-Vue.prototype.$echarts = echarts
+// Vue.prototype.$echarts = echarts
 
 new Vue({
     router,

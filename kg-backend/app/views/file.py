@@ -14,6 +14,7 @@ from django.core.paginator import Paginator, EmptyPage
 
 from app.utils.convert import convert_pdf_to_txt
 
+
 # 上传文献，有权限控制（开发中，测试中）
 @csrf_exempt
 def upload_file(request):
@@ -22,10 +23,11 @@ def upload_file(request):
         title = request.POST.get('title')
         file_type = request.POST.get('file_type')
         content = request.POST.get('content')
+        open_level = request.POST.get('open_level')
         # =============== content 文件解码 =============
         if file_type == 'pdf':
             content = convert_pdf_to_txt(content)
-            
+
         # =============== 获取token信息 ===============
         user_email = request.user_info
         # =============== 获取数据库信息 ===============
@@ -35,9 +37,9 @@ def upload_file(request):
         update_time = create_time
         user_name = user.username
         file = Document(create_time=create_time, update_time=update_time, title=title,
-                        content=content, user_name=user_name)
+                        content=content, user_name=user_name, user_email=user_email, open_level=open_level)
         file.save()
-        
+
         # ============ 调用服务器模型返回 QA List ============
         json_response(200, '文献提交成功')
         qa_list = call_model(content)
@@ -164,8 +166,18 @@ def get_file_detail(request):
 @csrf_exempt
 def get_all_files(request):
     if request.method == 'GET':
-        files = Document.objects.all().values().order_by('-create_time')
+        # 获取是否要查看公共文献库的标志
+        public_library = request.GET.get('publicLibrary', 1)
 
+        if public_library == 1 or public_library == '1':
+            # files = Document.objects.all().values().order_by('-create_time')
+            files = (Document.objects.filter(open_level=1).
+                     values('title', 'document_id', 'create_time', 'update_time', 'user_name', 'open_level').order_by('-create_time'))
+        else:
+            # 只查看自己的文献
+            user_email = request.user_info
+            files = (Document.objects.filter(user_email=user_email).
+                     values('title', 'document_id', 'create_time', 'update_time', 'user_name', 'open_level').order_by('-create_time'))
         # 此处使用 Django 自带的分页查询功能
         # 设置每页显示的记录数，这里假设一页显示10条记录
         items_per_page = request.GET.get('pageSize', 5)
@@ -310,4 +322,3 @@ def delete_file(request):
             return json_response(215, '该文献不存在')
     else:
         return json_response(203, '请求方式错误')
-

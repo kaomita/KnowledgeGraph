@@ -134,8 +134,7 @@ export default {
       if (this.email == "" || this.password == "") {
         this.$message.error("请输入邮箱和密码");
         return;
-      }
-      else {
+      } else {
         const res = await login({ email: this.email, password: this.password });
         this.$store.commit("updateUser", res.data.data);
         this.$message.success("登录成功");
@@ -158,10 +157,9 @@ export default {
           username: this.username,
           verificationCode: this.code,
         });
-      }
-
-      if (res.status == 200) {
-        this.login();
+        if (res.status == 200) {
+          this.login();
+        }
       }
     },
     sendCode() {
@@ -293,10 +291,10 @@ export default {
 
 .code {
   position: absolute;
-  top: 248px;
-  left: 338px;
+  top: 252px;
+  left: 328px;
   color: #4aa4ad;
-  font-size: 40px;
+  font-size: 36px;
   transform: translate(-50%);
   cursor: pointer;
 }
