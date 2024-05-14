@@ -34,16 +34,31 @@
       </div>
     </div>
     <div class="btn">
-      <div v-waves class="button" @click="submit">
+      <div v-waves class="button" @click="sureOpenDialogVisible = true">
         <i class="el-icon-upload2"></i>
       </div>
       <span class="text">&nbsp;&nbsp;&nbsp;支持上传txt文件和pdf文件</span>
     </div>
+
+    <el-dialog title="提示" :visible.sync="sureOpenDialogVisible" width="30%">
+      <span>您是否愿意公开该文献</span>
+      <span v-waves slot="footer" class="dialog-footer">
+        <el-button @click="notOpenArticle">否</el-button>
+        <el-button type="primary" @click="openArticle">是</el-button>
+      </span>
+    </el-dialog>
+
     <div style="float: left" class="file_list">
       <ul>
-        <li>
+        <li style="display: flex; align-items: center;">
           <h3>已上传通过文献</h3>
-        </li>
+        <el-switch
+          v-model="readPublicLibrary"
+          active-text="查看所有公开的文献"
+          @change="switchLibrary"
+        >
+        </el-switch>
+      </li>
         <li>
           <el-table
             :data="successFiles"
@@ -52,11 +67,17 @@
             :row-style="{ height: '50px' }"
             v-loading="loading"
           >
-            <el-table-column prop="title" label="文献名" width="150">
+            <el-table-column prop="title" label="文献名" width="160">
             </el-table-column>
-            <el-table-column prop="user_name" label="上传人" width="180">
+            <el-table-column prop="user_name" label="上传人" width="120">
             </el-table-column>
-            <el-table-column prop="create_time" label="上传时间" width="100">
+            <el-table-column prop="create_time" label="上传时间" width="120">
+            </el-table-column>
+            <el-table-column prop="open_level" label="是否公开" width="120">
+              <template slot-scope="scope">
+                <span v-if="scope.row.open_level == 1">是</span>
+                <span v-else>否</span>
+              </template>
             </el-table-column>
             <el-table-column align="right">
               <template slot-scope="scope">
@@ -112,10 +133,15 @@ export default {
       params: {
         page: 1,
         pageSize: 4,
+        role: this.$store.getters.getUser,
       },
       visible: false,
       fileDetail: {},
       loading: true,
+      sureOpenDialogVisible: false,
+      openLevel: 1, //默认公开
+      publicLibrary: 0,
+      readPublicLibrary: false, //默认不查看公开文献库,和publicLibrary同状态
     };
   },
   computed: {},
@@ -152,6 +178,16 @@ export default {
           });
         });
     },
+    openArticle() {
+      this.sureOpenDialogVisible = false;
+      this.openLevel = 1;
+      this.submit();
+    },
+    notOpenArticle() {
+      this.sureOpenDialogVisible = false;
+      this.openLevel = 0;
+      this.submit();
+    },
     submit() {
       //逐个文件上传
       if (this.toBeUploadedFiles.length == 0) {
@@ -174,17 +210,19 @@ export default {
           title: file.title,
           file_type: file.file_type,
           content: file.content,
+          open_level: this.openLevel,
         });
-        this.$message.success("上传成功,模型正在解析");
+        this.$message.success("上传成功");
         this.toBeUploadedFiles = [];
-        this.getAllFiles();
       });
+      setTimeout(() => {
       this.getAllFiles();
+    }, 500); // 等待 500 毫秒后刷新
     },
     beforeUpload(file) {
       //读取文件名和内容并且添加到fileList中
       //读取文件名和内容并且添加到fileList中
-      const fileType = file.name.split(".")[1];
+      const fileType = file.name.split(".").pop();
       console.log(fileType);
       if (fileType != "txt" && fileType != "pdf") {
         this.$message.error("文件类型错误, 只能上传txt或pdf文件");
@@ -227,8 +265,18 @@ export default {
       this.loading = true;
       this.getAllFiles();
     },
+    switchLibrary() {
+      this.publicLibrary = this.readPublicLibrary ? 1 : 0;
+      this.getAllFiles();
+    },
     getAllFiles() {
-      getAllFiles(this.params).then((res) => {
+      this.params.page=1;
+      getAllFiles({
+        page: this.params.page,
+        pageSize: this.params.pageSize,
+        role: this.params.role,
+        publicLibrary: this.publicLibrary,
+      }).then((res) => {
         this.successFiles = res.data.data.current_page_data;
         this.total =
           res.data.data.pagination.total_pages * this.params.pageSize;

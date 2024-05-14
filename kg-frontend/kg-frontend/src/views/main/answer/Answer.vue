@@ -1,21 +1,38 @@
 <template>
   <div>
-    <md-input
-      v-model="question"
-      class="input-with-select"
-      icon="el-icon-search"
-      name="title"
-      :placeholder="placeholderText"
-      @keyup.enter.native="getSearchResult"
-      @input="highlightKeyword(question)"
-      @click.native="placeholderText = ''"
-    >
-      <i class="el-icon-search el-input__icon" style="color: #4338ca"></i>
-      <span class="text" style="color: #4338ca">请输入提问</span>
-    </md-input>
-    <el-button type="primary" @click="getAllAnswer" class="getallAnswer-button"
-      >查询</el-button
-    >
+    <div style="display: flex; align-items: center">
+      
+      <md-input
+        v-model="question"
+        class="input-with-select"
+        icon="el-icon-search"
+        name="title"
+        :placeholder="placeholderText"
+        @keyup.enter.native="getSearchResult"
+        @input="highlightKeyword(question)"
+        @click.native="placeholderText = ''"
+      >
+        <i class="el-icon-search el-input__icon" style="color: #4338ca"></i>
+        <span class="text" style="color: #4338ca">请输入提问</span>
+      </md-input>
+
+      <el-switch
+        v-model="readPublicLibrary"
+        active-text="在公开的库中检索"
+        @change="switchLibrary"
+        class="search-switch"
+      >
+      </el-switch>
+      
+      <el-button
+        type="primary"
+        @click="getAllAnswer"
+        v-waves
+        class="getallAnswer-button"
+        >查询</el-button
+      >
+    </div>
+
     <div class="table">
       <el-table
         :data="pairs"
@@ -108,9 +125,11 @@ import { getAllAnswer, deleteAnswer, updateAnswer, search } from "@/api/answer";
 import { getFileDetail } from "@/api/file";
 import CustomModal from "components/CustomModal.vue";
 import MdInput from "components/MDinput";
+import waves from "@/directive/waves";
 export default {
   name: "Answer",
   components: { CustomModal, MdInput },
+  directives: { waves },
   data() {
     return {
       pairs: [],
@@ -134,12 +153,18 @@ export default {
       highlightKeywords_pair: [],
       fileDetail: {},
       visible: false,
+      readPublicLibrary: false,
+      publicSearch: 0,
     };
   },
   methods: {
     getAllAnswer() {
       this.isAll = true;
-      getAllAnswer(this.params).then((res) => {
+      getAllAnswer({
+        page: this.params.page,
+        pageSize: this.params.pageSize,
+        publicSearch: this.publicSearch,
+      }).then((res) => {
         this.pairs = res.data.data.current_page_data;
         this.total =
           res.data.data.pagination.total_pages * this.params.pageSize;
@@ -153,10 +178,14 @@ export default {
       this.loading = true;
       search({
         question: this.question,
+        publicSearch: this.publicSearch,
       }).then((res) => {
         this.pairs = res.data.data;
         this.loading = false;
       });
+    },
+    switchLibrary() {
+      this.publicSearch = this.readPublicLibrary ? 1 : 0;
     },
     handleSizeChange(v) {
       this.params.pageSize = v;
@@ -243,8 +272,8 @@ export default {
 <style scoped>
 .input-with-select {
   width: 500px;
-  margin-top: 120px;
-  margin-left: 626px;
+  margin-top: 40px;
+  margin-left: 30px;
 }
 
 .el-icon-search {
@@ -255,13 +284,14 @@ export default {
   color: #5e85bf;
 }
 .getallAnswer-button {
-  position: absolute;
-  left: 400px;
-  top: 110px;
-  background-color: #809cf5;
+  /* position: absolute; */
+  margin-left: 300px;
+  /* top: 110px; */
+  /* background-color: #809cf5; */
 }
-.getallAnswer-button:hover {
-  background-color: #a3b6f7;
+
+.search-switch {
+  margin-top: 40px;
 }
 .table {
   margin: 0 auto;

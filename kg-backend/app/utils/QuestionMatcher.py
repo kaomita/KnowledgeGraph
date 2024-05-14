@@ -19,15 +19,17 @@ class QuestionMatcher:
             answer = q_dict.get('answer', '')
             document = q_dict.get('title', '')
             id = q_dict.get('id', '')
+            document_id = q_dict.get('document_id', '')
             ratio = QuestionMatcher.calculate_similarity(user_input, question)
             if len(heap) < top_n :
                 # and ratio > 0.2
-                heapq.heappush(heap, (ratio, question, answer, document, id))
+                heapq.heappush(heap, (ratio, question, answer, document, id, document_id))
             else:
-                heapq.heappushpop(heap, (ratio, question, answer, document, id))
+                heapq.heappushpop(heap, (ratio, question, answer, document, id, document_id))
 
         best_matches = sorted(heap, reverse=True)
-        return [{'question': match[1], 'answer': match[2], 'title': match[3], 'id':match[4]} for match in best_matches]
+        return [{'question': match[1], 'answer': match[2], 'title': match[3], 'id': match[4],
+                 'document_id': match[5]} for match in best_matches]
 
     @staticmethod
     def calculate_similarity(a, b):

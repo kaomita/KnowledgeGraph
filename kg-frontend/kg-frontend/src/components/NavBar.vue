@@ -47,9 +47,9 @@
             background-color="#f8fafc"
           >
             <el-submenu index="2" class="full-size haha">
-              <template slot="title" style="border-radius: 8px">
+              <template slot="title">
                 <div slot="nav" class="ah">
-                  <span class="text">（管理员）Admin</span>
+                  <span class="text el-icon-s-custom">{{username}} ({{identity}})</span>
                 </div>
               </template>
               <el-dropdown-item
@@ -94,13 +94,26 @@ export default {
       search: "",
       avatarUrl: "",
       show: false,
+      identity: "",
+      username: "",
     };
   },
   computed: {
-    identity() {
-      return this.$store.getters.getIdentity ? "管理员" : "普通用户";
-    },
+  identity() {
+    return this.$store.getters.getIdentity ? "管理员" : "普通用户";
   },
+},
+watch: {
+  '$store.getters.getUser': {
+    immediate: true,
+    handler(newValue, oldValue) {
+      this.username = this.$store.getters.getUser;
+      this.identity = this.$store.getters.getIdentity ? "管理员" : "普通用户";
+      console.log(this.$store.getters.getUser);
+      console.log(this.$store.getters.getIdentity);
+    }
+  }
+},
   methods: {
     layout() {
       this.$store.commit("clearUser");

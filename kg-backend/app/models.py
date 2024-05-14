@@ -66,6 +66,8 @@ class Document(models.Model):
     user_name = models.CharField(max_length=50)
     title = models.CharField(max_length=50)
     content = models.TextField()
+    open_level = models.IntegerField(choices=[(1, '公开'), (0, '私密')])
+    user_email = models.CharField(max_length=50)
 
     # reason = models.CharField(default='', max_length=100)
     # auditor = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='auditor')

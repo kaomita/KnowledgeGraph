@@ -39,3 +39,4 @@ kg-backend/app/utils/testData/predictions_list.json
 
 # test
 .test/
+/kg-backend/app/utils/testData/

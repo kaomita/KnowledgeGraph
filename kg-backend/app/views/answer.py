@@ -13,7 +13,16 @@ def get_answer(request):
     if request.method == 'POST':
         question = request.POST.get('question')
 
-        qapair = list(QApair.objects.all().values())
+        # 是否检索公共问答对
+        public_qapair = request.POST.get('publicSearch', 0)
+
+        if public_qapair == 1 or public_qapair == '1':  # 检索公共问答对
+            document_ids = Document.objects.filter(open_level=1).values_list('document_id', flat=True)
+            qapair = list(QApair.objects.filter(document_id__in=document_ids).values())
+        else:
+            user_email = request.user_info
+            document_ids = Document.objects.filter(user_email=user_email).values_list('document_id', flat=True)
+            qapair = list(QApair.objects.filter(document_id__in=document_ids).values())
 
         for item in qapair:
             document_id = item.get('document_id')
@@ -32,7 +41,18 @@ def get_answer(request):
 @csrf_exempt
 def get_answer_list(request):
     if request.method == 'GET':
-        answer_list = QApair.objects.all().values()
+
+        # 是否检索公共问答对
+        public_qapair = request.GET.get('publicSearch', 0)
+        print(public_qapair)
+
+        if public_qapair == 1 or public_qapair == '1':  # 检索公共问答对
+            document_ids = Document.objects.filter(open_level=1).values_list('document_id', flat=True)
+            answer_list = list(QApair.objects.filter(document_id__in=document_ids).values())
+        else:
+            user_email = request.user_info
+            document_ids = Document.objects.filter(user_email=user_email).values_list('document_id', flat=True)
+            answer_list = list(QApair.objects.filter(document_id__in=document_ids).values())
 
         # 此处使用 Django 自带的分页查询功能
         # 设置每页显示的记录数，默认一页显示10条记录
