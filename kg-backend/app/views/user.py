@@ -92,8 +92,11 @@ def login(request):
 def get_user_list(request):
     if request.method == 'GET':
         user = User.objects.filter(email=request.user_info).first()
-        if user.role == 1:
-            users = User.objects.all().values()
+        if user.role == 1 or user.role == 2:
+            if user.role == 1:  # 管理员只能查看普通用户
+                users = User.objects.filter(role=0).values()
+            else:
+                users = User.objects.filter(role__in=[0, 1]).values()
 
             # 此处使用 Django 自带的分页查询功能
             # 设置每页显示的记录数，这里假设一页显示10条记录
@@ -137,7 +140,7 @@ def delete_self(request):
         user = User.objects.filter(email=request.user_info).first()
         if user is None:
             return json_response(205, "账号不存在")
-        if user.role == 1:
+        if user.role == 1 or user.role == 2:
             return json_response(212, "管理员不可注销自己")
         user.delete()
         return json_response(200, '操作成功')

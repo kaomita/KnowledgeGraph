@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.csrf import csrf_exempt
 from app.utils.QuestionMatcher import QuestionMatcher
 from app.utils.jsonResponse import json_response
-from app.models import User, QApair, Document
+from app.models import User, QApair, Document, Permission, UserPermission
 
 
 # 功能描述：查询相关问答对
@@ -12,11 +12,23 @@ from app.models import User, QApair, Document
 def get_answer(request):
     if request.method == 'POST':
         question = request.POST.get('question')
+        user_email = request.user_info
+        user_id = User.objects.filter(email=user_email).values('user_id').first()['user_id']
+        role = User.objects.filter(email=user_email).values('role').first()['role']
 
         # 是否检索公共问答对
         public_qapair = request.POST.get('publicSearch', 0)
 
         if public_qapair == 1 or public_qapair == '1':  # 检索公共问答对
+            if public_qapair == 1 or public_qapair == '1':  # 检索公共问答对
+                if role == '0' or role == 0:  # 普通用户需要检查对应的权限，管理员可放行
+                    permission_id = \
+                    Permission.objects.filter(permission_name='readOpenQapair').values('permission_id').first()[
+                        'permission_id']
+                    is_allowed = UserPermission.objects.filter(user_id=user_id, permission_id=permission_id).values(
+                        "is_allowed").first()['is_allowed']
+                    if is_allowed == 0:
+                        return json_response(206, '无权限此操作')
             document_ids = Document.objects.filter(open_level=1).values_list('document_id', flat=True)
             qapair = list(QApair.objects.filter(document_id__in=document_ids).values())
         else:
@@ -41,16 +53,23 @@ def get_answer(request):
 @csrf_exempt
 def get_answer_list(request):
     if request.method == 'GET':
-
+        user_email = request.user_info
+        user_id = User.objects.filter(email=user_email).values('user_id').first()['user_id']
+        role = User.objects.filter(email=user_email).values('role').first()['role']
         # 是否检索公共问答对
         public_qapair = request.GET.get('publicSearch', 0)
-        print(public_qapair)
 
         if public_qapair == 1 or public_qapair == '1':  # 检索公共问答对
+            if role == '0' or role == 0:  # 普通用户需要检查对应的权限，管理员可放行
+                permission_id = Permission.objects.filter(permission_name='readOpenQapair').values('permission_id').first()['permission_id']
+                is_allowed = UserPermission.objects.filter(user_id=user_id, permission_id=permission_id).values(
+                    "is_allowed").first()['is_allowed']
+                if is_allowed == 0:
+                    return json_response(206, '无权限此操作')
+            # 获取公共问答对
             document_ids = Document.objects.filter(open_level=1).values_list('document_id', flat=True)
             answer_list = list(QApair.objects.filter(document_id__in=document_ids).values())
         else:
-            user_email = request.user_info
             document_ids = Document.objects.filter(user_email=user_email).values_list('document_id', flat=True)
             answer_list = list(QApair.objects.filter(document_id__in=document_ids).values())
 
