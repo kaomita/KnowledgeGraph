@@ -50,15 +50,15 @@
 
     <div style="float: left" class="file_list">
       <ul>
-        <li style="display: flex; align-items: center;">
+        <li style="display: flex; align-items: center">
           <h3>已上传通过文献</h3>
-        <el-switch
-          v-model="readPublicLibrary"
-          active-text="查看所有公开的文献"
-          @change="switchLibrary"
-        >
-        </el-switch>
-      </li>
+          <el-switch
+            v-model="readPublicLibrary"
+            active-text="查看所有公开的文献"
+            @change="switchLibrary"
+          >
+          </el-switch>
+        </li>
         <li>
           <el-table
             :data="successFiles"
@@ -133,7 +133,7 @@ export default {
       params: {
         page: 1,
         pageSize: 4,
-        role: this.$store.getters.getUser,
+        role: this.$store.getters.getIdentity,
       },
       visible: false,
       fileDetail: {},
@@ -216,8 +216,8 @@ export default {
         this.toBeUploadedFiles = [];
       });
       setTimeout(() => {
-      this.getAllFiles();
-    }, 500); // 等待 500 毫秒后刷新
+        this.getAllFiles();
+      }, 500); // 等待 500 毫秒后刷新
     },
     beforeUpload(file) {
       //读取文件名和内容并且添加到fileList中
@@ -267,20 +267,27 @@ export default {
     },
     switchLibrary() {
       this.publicLibrary = this.readPublicLibrary ? 1 : 0;
+      this.params.page = 1;
       this.getAllFiles();
     },
     getAllFiles() {
-      this.params.page=1;
       getAllFiles({
         page: this.params.page,
         pageSize: this.params.pageSize,
         role: this.params.role,
         publicLibrary: this.publicLibrary,
       }).then((res) => {
-        this.successFiles = res.data.data.current_page_data;
-        this.total =
-          res.data.data.pagination.total_pages * this.params.pageSize;
-        this.loading = false;
+        console.log(res);
+        if (res.status == '206') {
+          //没有实现
+          this.readPublicLibrary = false;
+          console.log("您没有权限查看公开文献库");
+        } else {
+          this.successFiles = res.data.data.current_page_data;
+          this.total =
+            res.data.data.pagination.total_pages * this.params.pageSize;
+          this.loading = false;
+        }
       });
     },
     getFileDetail(document_id) {

@@ -180,8 +180,8 @@ export default {
         question: this.question,
         publicSearch: this.publicSearch,
       }).then((res) => {
-        this.pairs = res.data.data;
         this.loading = false;
+        this.pairs = res.data.data;
       });
     },
     switchLibrary() {
