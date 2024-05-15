@@ -36,7 +36,13 @@ export default {
   },
   computed: {
     identity() {
-      return this.$store.getters.getIdentity ? "管理员" : "普通用户";
+      if(this.$store.getters.getIdentity == 1) {
+        return "管理员";
+      } else if(this.$store.getters.getIdentity == 0) {
+        return "普通用户";
+      } else {
+        return "超级管理员";
+      }
     },
   },
   methods: {

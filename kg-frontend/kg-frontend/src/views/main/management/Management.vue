@@ -33,7 +33,7 @@
         <el-table-column align="center">
           <template slot-scope="scope">
             <span
-              v-show="scope.row.role == '普通用户'"
+              v-show="true"
               class="el-icon-more"
               @click="handle($event, scope.row)"
             ></span>
@@ -75,7 +75,7 @@
         <div class="permission" v-loading="loading_permission">
           <div class="switch" v-for="(item, index) in permissions" :key="index">
             <div class="permission_name">
-              {{ permission_name[item.permission_id - 1] }}
+              {{ permission_name[index] }}
             </div>
             <el-switch
               v-model="item.is_allowed"
@@ -112,7 +112,7 @@ export default {
     return {
       userList: [],
       permissions: [],
-      permission_name: ["修改文献", "删除文献", "修改问答对", "删除问答对"],
+      permission_name: [],
       total: 100,
       params: {
         page: 1,
@@ -130,10 +130,16 @@ export default {
   computed: {},
   methods: {
     getIdentity(role) {
-      return role ? "管理员" : "普通用户";
+      if (role == 2) {
+        return "超级管理员";
+      } else if (role == 1) {
+        return "管理员";
+      } else {
+        return "普通用户";
+      }
     },
     updatePermission() {
-      this.permission_id = [1, 2, 3, 4];
+      this.is_allowed = [];
       this.permissions.forEach((item) => {
         this.is_allowed.push(item.is_allowed ? 1 : 0);
       });
@@ -198,7 +204,14 @@ export default {
     },
     getPermission(userId, userName) {
       getPermission({ user_id: userId }).then((res) => {
-        this.permissions = res.data.data;
+        if(res.data.data.role==1) {
+          this.permission_name=["控制用户文献改动","控制用户问答对改动","控制用户公共文献库查询","控制用户公共问答对查询"];
+          this.permission_id=[7,8,9,10];
+        } else {
+          this.permission_name=["修改文献", "删除文献", "修改问答对", "删除问答对", "读取公共文献库", "读取公共问答对"];
+          this.permission_id=[1,2,3,4,5,6];
+        }
+        this.permissions = res.data.data.data;
         this.username = userName;
         this.user_id = userId;
         this.loading_permission = false;
@@ -260,13 +273,13 @@ export default {
 }
 .switch {
   /* background-color: #5e85bf; */
-  width: 150px;
+  width: 195px;
   height: 40px;
   display: flex;
   /* margin-top: 10px; */
 }
 .switch .permission_name {
-  width: 70%;
+  width: 80%;
 }
 .btn {
     position: relative;
@@ -331,7 +344,7 @@ div :deep(.el-table)::before {
 .model-container {
   /* position: absolute; */
   width: 500px;
-  height: 300px;
+  height: 400px;
   top: 800px;
   max-width: 800px;
   background-color: #fff;
@@ -388,6 +401,7 @@ h3 {
 .el-icon-more {
   cursor: pointer;
   font-size: 18px;
+  margin-left: 0;
 }
 .el-icon-more:hover {
   color: #5e85bf;
