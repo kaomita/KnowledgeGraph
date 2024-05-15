@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from app.utils.jsonResponse import json_response
-from app.models import User, UserPermission
+from app.models import User, UserPermission, AdminPermission
 import json
 
 
@@ -9,11 +9,22 @@ import json
 def get_user_permission(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
-        user_permission = UserPermission.objects.filter(user=user_id)
+        is_admin = User.objects.filter(user_id=user_id).first().role
+        if is_admin == 1:
+            user_permission = AdminPermission.objects.filter(user_id=user_id)
+        else:
+            user_permission = UserPermission.objects.filter(user_id=user_id)
         if user_permission.first() is None:
             return json_response(204, '该用户不存在')
         else:
-            return json_response(200, '权限查询成功', list(user_permission.values()))
+            user_permission_data = list(user_permission.values())
+            response_data = {
+                'data': user_permission_data,
+                'role': is_admin,
+            }
+
+            # 返回修改后的数据
+            return json_response(200, '权限查询成功', response_data)
     else:
         return json_response(203, '请求方式错误')
 
@@ -23,11 +34,15 @@ def get_user_permission(request):
 def change_permission(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
+        is_admin = User.objects.filter(user_id=user_id).first().role
         permission_id = [int(num) for num in request.POST.get('permission_id').split(",")]
         is_allowed = [int(num) for num in request.POST.get('is_allowed').split(",")]
         print(user_id, permission_id, is_allowed)
         for i in range(len(permission_id)):
-            userpermission = UserPermission.objects.filter(user_id=user_id, permission_id=permission_id[i]).first()
+            if is_admin == 1:
+                userpermission = AdminPermission.objects.filter(user_id=user_id, permission_id=permission_id[i]).first()
+            else:
+                userpermission = UserPermission.objects.filter(user_id=user_id, permission_id=permission_id[i]).first()
             userpermission.is_allowed = is_allowed[i]
             userpermission.save()
         return json_response(200, '修改成功')

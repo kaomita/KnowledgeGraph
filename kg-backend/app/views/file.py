@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from app.utils.callModel import call_model
 from app.utils.jsonResponse import json_response
-from app.models import Document, User, QApair
+from app.models import Document, User, QApair, Permission, UserPermission
 import time
 from datetime import datetime
 from django.http import QueryDict
@@ -166,16 +166,23 @@ def get_file_detail(request):
 @csrf_exempt
 def get_all_files(request):
     if request.method == 'GET':
+        user_email = request.user_info
+        user_id = User.objects.filter(email=user_email).first().user_id
         # 获取是否要查看公共文献库的标志
         public_library = request.GET.get('publicLibrary', 1)
 
         if public_library == 1 or public_library == '1':
-            # files = Document.objects.all().values().order_by('-create_time')
+            if request.GET.get('role') == '0':  # 普通用户需要检查对应的权限，管理员可放行
+                permission_id = Permission.objects.filter(permission_name='readOpenLibrary').values('permission_id').first()['permission_id']
+                is_allowed = UserPermission.objects.filter(user_id=user_id, permission_id=permission_id).values(
+                    "is_allowed").first()['is_allowed']
+                if is_allowed == 0:
+                    return json_response(206, '无权限此操作')
+            # 查看公共文献库
             files = (Document.objects.filter(open_level=1).
                      values('title', 'document_id', 'create_time', 'update_time', 'user_name', 'open_level').order_by('-create_time'))
         else:
             # 只查看自己的文献
-            user_email = request.user_info
             files = (Document.objects.filter(user_email=user_email).
                      values('title', 'document_id', 'create_time', 'update_time', 'user_name', 'open_level').order_by('-create_time'))
         # 此处使用 Django 自带的分页查询功能

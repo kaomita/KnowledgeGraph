@@ -7,7 +7,7 @@ class User(models.Model):
     username = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
-    role = models.IntegerField(choices=[(0, '普通用户'), (1, '管理员')])
+    role = models.IntegerField(choices=[(0, '普通用户'), (1, '管理员'), (2, '超级管理员')])
     permission = models.ManyToManyField('Permission', through='UserPermission')
 
     class Meta:
@@ -32,6 +32,18 @@ class UserPermission(models.Model):
 
     class Meta:
         db_table = 'user_permission'
+        unique_together = ('user_id', 'permission_id')
+
+
+# 管理员权限表
+class AdminPermission(models.Model):
+    admin_permission_id = models.AutoField(primary_key=True, db_column='admin_permission_id')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_id')
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE, db_column='permission_id')
+    is_allowed = models.BooleanField(db_column="is_allowed", default=False)
+
+    class Meta:
+        db_table = 'admin_permission'
         unique_together = ('user_id', 'permission_id')
 
 
