@@ -21,8 +21,9 @@
               v-model="password"
               placeholder="Password"
               class="input"
+              @keyup.enter="login"
             />
-            <button v-waves class="btn" @click="login">sign in</button>
+            <button v-waves class="btn" type="button" @click="login">sign in</button>
             <div class="link">
               New here? <a class="linka" @click="goSignUp">Sign Up</a>
             </div>
@@ -57,6 +58,7 @@
               v-model="code"
               placeholder="Verification Code"
               class="input verify"
+              @keyup.enter="register"
             />
             <div
               class="code el-icon-message"
@@ -64,7 +66,7 @@
               @click="sendCode"
             ></div>
             <div class="code data" v-else>{{ showTime }}</div>
-            <button v-waves class="btn" @click="register">sign up</button>
+            <button v-waves class="btn" type="button" @click="register">sign up</button>
             <div class="link">
               Already have an account?
               <a class="linka" @click="goSignIn">Sign In</a>

@@ -276,19 +276,21 @@ export default {
         pageSize: this.params.pageSize,
         role: this.params.role,
         publicLibrary: this.publicLibrary,
-      }).then((res) => {
-        console.log(res);
-        if (res.status == '206') {
-          //没有实现
-          this.readPublicLibrary = false;
-          console.log("您没有权限查看公开文献库");
-        } else {
+      })
+        .then((res) => {
           this.successFiles = res.data.data.current_page_data;
           this.total =
             res.data.data.pagination.total_pages * this.params.pageSize;
           this.loading = false;
-        }
-      });
+          return;
+        })
+        .catch((err) => {
+          if (err.message == 206) {
+            setTimeout(() => {
+              this.readPublicLibrary = false;
+            }, 300);
+          }
+        });
     },
     getFileDetail(document_id) {
       getFileDetail({ document_id: document_id }).then((res) => {

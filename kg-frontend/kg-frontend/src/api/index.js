@@ -28,11 +28,12 @@ export function request(config) {
             switch (res.status) {
                 case 200: return res; break;
                 case 201: vm.$message.error('请输入完整数据'); break;
-                case 202: vm.$message.error('账号或用户名已存在'); break;
+                case 202: vm.$message.error('账号已存在'); break;
                 case 203: vm.$message.error('请求出错'); break;
                 case 204: vm.$message.error('数据不存在'); break;
                 case 205: vm.$message.error('用户不存在'); break;
-                case 206: vm.$message.error('您无权限此操作,请向管理员申请'); break;
+                case 206: vm.$message.error('您无权限此操作,请向管理员申请');
+                    throw new Error('206')
                 case 209: vm.$message.error('没有身份信息'); break;
                 case 210: vm.$message.error('登录已过期，请重新登录');
                     localStorage.removeItem('USER')

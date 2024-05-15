@@ -1,7 +1,6 @@
 <template>
   <div>
     <div style="display: flex; align-items: center">
-      
       <md-input
         v-model="question"
         class="input-with-select"
@@ -23,7 +22,7 @@
         class="search-switch"
       >
       </el-switch>
-      
+
       <el-button
         type="primary"
         @click="getAllAnswer"
@@ -159,17 +158,27 @@ export default {
   },
   methods: {
     getAllAnswer() {
+      this.loading = true;
       this.isAll = true;
       getAllAnswer({
         page: this.params.page,
         pageSize: this.params.pageSize,
         publicSearch: this.publicSearch,
-      }).then((res) => {
-        this.pairs = res.data.data.current_page_data;
-        this.total =
-          res.data.data.pagination.total_pages * this.params.pageSize;
-        this.loading = false;
-      });
+      })
+        .then((res) => {
+          this.pairs = res.data.data.current_page_data;
+          this.total =
+            res.data.data.pagination.total_pages * this.params.pageSize;
+          this.loading = false;
+          return;
+        })
+        .catch((err) => {
+          if (err.message == 206) {
+            this.readPublicLibrary = false;
+            this.loading = false;
+            this.publicSearch = 0;
+          }
+        });
     },
     getSearchResult() {
       this.params.page = 1;
@@ -179,10 +188,19 @@ export default {
       search({
         question: this.question,
         publicSearch: this.publicSearch,
-      }).then((res) => {
-        this.loading = false;
-        this.pairs = res.data.data;
-      });
+      })
+        .then((res) => {
+          this.pairs = res.data.data;
+          this.loading = false;
+          return;
+        })
+        .catch((err) => {
+          if (err.message == 206) {
+            this.readPublicLibrary = false;
+            this.loading = false;
+            this.publicSearch = 0;
+          }
+        });
     },
     switchLibrary() {
       this.publicSearch = this.readPublicLibrary ? 1 : 0;

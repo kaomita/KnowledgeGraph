@@ -18,6 +18,7 @@ class User(models.Model):
 class Permission(models.Model):
     permission_id = models.AutoField(primary_key=True, db_column='permission_id', serialize=False)
     permission_name = models.CharField(max_length=50, db_column='permission_name')
+    is_admin = models.IntegerField(choices=[(0, 'No'), (1, 'Yes')])
 
     class Meta:
         db_table = 'permission'

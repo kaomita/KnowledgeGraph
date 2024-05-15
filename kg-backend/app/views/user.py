@@ -35,9 +35,9 @@ def register(request):
             return json_response(213, '邮箱格式错误')
         if not (username and password and email and verificationCode):
             return json_response(201, '请输入完整数据')
-        if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+        if User.objects.filter(username=username).exists():
             print(username, email)
-            return json_response(202, '账号或用户名已存在')
+            return json_response(202, '账号已存在')
         if str(code_.decode()) != str(verificationCode):
             print(code_.decode(), verificationCode)
             return json_response(216, '验证码不正确或已失效')
@@ -47,10 +47,10 @@ def register(request):
         user = User(username=username, password=md5_pwd, email=email, role=0)
         user.save()
         # 导入权限表数据
-        user_id = User.objects.filter(username=username).first()
-        permission_list = Permission.objects.values_list("permission_id")
+        user_id = User.objects.filter(email=email).first()
+        permission_list = Permission.objects.filter(is_admin=0).values_list("permission_id", flat=True)
         for permission in permission_list:
-            user_permission = UserPermission(user=user_id, permission_id=permission[0], is_allowed=0)
+            user_permission = UserPermission(user=user_id, permission_id=permission, is_allowed=0)
             user_permission.save()
         return json_response(200, '创建成功')
     else:

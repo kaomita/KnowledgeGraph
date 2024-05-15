@@ -46,7 +46,7 @@
             </span>
             &nbsp;&nbsp;&nbsp;
             <span
-              v-show="scope.row.role == '普通用户'"
+              v-show="true"
               class="el-icon-delete"
               @click="deleteUser($event, scope.row)"
             >
@@ -156,7 +156,7 @@ export default {
     },
     guardAdmin(event, row) {
       this.$confirm(
-        "确定要授予该用户管理员身份？此操作将使该用户与你等同权限",
+        "确定要授予该用户管理员身份？",
         "提示",
         {
           confirmButtonText: "确定",
